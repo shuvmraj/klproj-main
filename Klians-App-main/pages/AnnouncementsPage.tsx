@@ -75,12 +75,12 @@ export const AnnouncementsPage: React.FC = () => {
       setIsSubmitting(true);
       const newAnnouncement = await announcementsAPI.createAnnouncement(formData);
       
-      // Emit via socket for real-time update
-      if (socket) {
-        socket.emit('new-announcement', newAnnouncement);
+      // Don't add locally; let socket event handle it for all users
+      // If socket not available, add it locally
+      if (!socket) {
+        setAnnouncements(prev => [newAnnouncement, ...prev]);
       }
-
-      setAnnouncements(prev => [newAnnouncement, ...prev]);
+      
       setFormData({ title: '', content: '', target: 'All' });
       setIsCreateModalOpen(false);
     } catch (err) {

@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { MOCK_BROADCASTS } from '../constants';
 import { useAuth } from '../hooks/useAuth';
+import { useSocket } from '../contexts/SocketContext';
 import { Role, Broadcast } from '../types';
 import { Card } from '../components/ui/Card';
 import { Button } from '../components/ui/Button';
@@ -9,6 +10,7 @@ import { Input } from '../components/ui/Input';
 import { Avatar } from '../components/ui/Avatar';
 import { Modal } from '../components/ui/Modal';
 import { BroadcastCard } from '../components/BroadcastCard';
+import { announcementsAPI } from '../src/api/announcements';
 
 // --- ICONS ---
 const UsersIcon = (props: React.SVGProps<SVGSVGElement>) => (
@@ -92,11 +94,14 @@ const BroadcastHistoryItem: React.FC<{ broadcast: Broadcast }> = ({ broadcast })
 // --- MAIN PAGE COMPONENT ---
 export const BroadcastPage: React.FC = () => {
     const { user } = useAuth();
+    const { socket } = useSocket();
     const [broadcasts, setBroadcasts] = useState<Broadcast[]>(MOCK_BROADCASTS.sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()));
     const [title, setTitle] = useState('');
     const [content, setContent] = useState('');
     const [target, setTarget] = useState<Role | 'All'>('All');
     const [isPreviewOpen, setIsPreviewOpen] = useState(false);
+    const [isSubmitting, setIsSubmitting] = useState(false);
+    const [error, setError] = useState('');
     const navigate = useNavigate();
 
     const handleBack = () => {
@@ -111,20 +116,59 @@ export const BroadcastPage: React.FC = () => {
         setTitle('');
         setContent('');
         setTarget('All');
+        setError('');
     }
 
-    const handleSendBroadcast = () => {
+    const mapRoleToTarget = (role: Role | 'All'): string => {
+      if (role === 'All') return 'All';
+      if (role === Role.STUDENT) return 'Student';
+      if (role === Role.TEACHER) return 'Teacher';
+      return 'All';
+    };
+
+    const handleSendBroadcast = async () => {
         if (!title.trim() || !content.trim() || !user) return;
-        const newBroadcast: Broadcast = {
-            id: `broadcast-${Date.now()}`,
-            title,
-            content,
-            author: user,
-            target,
-            timestamp: new Date().toISOString(),
-        };
-        setBroadcasts([newBroadcast, ...broadcasts]);
-        clearForm();
+        
+        try {
+            setIsSubmitting(true);
+            setError('');
+            
+            // Map frontend role to backend target
+            const backendTarget = mapRoleToTarget(target);
+            
+            // Save to database
+            const newAnnouncement = await announcementsAPI.createAnnouncement({
+                title,
+                content,
+                target: backendTarget
+            });
+            
+            // Create broadcast object for local state
+            const newBroadcast: Broadcast = {
+                id: newAnnouncement._id,
+                title: newAnnouncement.title,
+                content: newAnnouncement.content,
+                author: user,
+                target: target,
+                timestamp: newAnnouncement.createdAt,
+            };
+            
+            // Update local state
+            setBroadcasts([newBroadcast, ...broadcasts]);
+            
+            // Emit socket event
+            if (socket) {
+                socket.emit('new-announcement', newAnnouncement);
+            }
+            
+            clearForm();
+            setIsPreviewOpen(false);
+        } catch (err) {
+            setError('Failed to send broadcast. Please try again.');
+            console.error(err);
+        } finally {
+            setIsSubmitting(false);
+        }
     };
     
     const isFormIncomplete = !title.trim() || !content.trim();
@@ -151,6 +195,7 @@ export const BroadcastPage: React.FC = () => {
                                     value={title} 
                                     onChange={(e) => setTitle(e.target.value)} 
                                     placeholder="e.g., Campus Closure Notice"
+                                    disabled={isSubmitting}
                                 />
                             </div>
                             <div>
@@ -159,22 +204,30 @@ export const BroadcastPage: React.FC = () => {
                                     id="broadcast-message"
                                     value={content}
                                     onChange={(e) => setContent(e.target.value)}
-                                    className="w-full p-3 bg-slate-100 dark:bg-slate-700 rounded-lg border border-transparent focus:outline-none focus:ring-2 focus:ring-red-500 resize-vertical transition text-base placeholder:text-slate-400"
+                                    className="w-full p-3 bg-slate-100 dark:bg-slate-700 rounded-lg border border-transparent focus:outline-none focus:ring-2 focus:ring-red-500 resize-vertical transition text-base placeholder:text-slate-400 disabled:opacity-50"
                                     rows={5}
                                     placeholder="Write your announcement here..."
+                                    disabled={isSubmitting}
                                 />
                             </div>
                             <div>
                                 <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">Target Audience</label>
                                 <div className="grid grid-cols-3 gap-3">
-                                    <AudienceButton label="All Users" icon={<UsersIcon />} isActive={target === 'All'} onClick={() => setTarget('All')} />
-                                    <AudienceButton label="Students" icon={<StudentsIcon />} isActive={target === Role.STUDENT} onClick={() => setTarget(Role.STUDENT)} />
-                                    <AudienceButton label="Teachers" icon={<TeachersIcon />} isActive={target === Role.TEACHER} onClick={() => setTarget(Role.TEACHER)} />
+                                    <AudienceButton label="All Users" icon={<UsersIcon />} isActive={target === 'All'} onClick={() => !isSubmitting && setTarget('All')} />
+                                    <AudienceButton label="Students" icon={<StudentsIcon />} isActive={target === Role.STUDENT} onClick={() => !isSubmitting && setTarget(Role.STUDENT)} />
+                                    <AudienceButton label="Teachers" icon={<TeachersIcon />} isActive={target === Role.TEACHER} onClick={() => !isSubmitting && setTarget(Role.TEACHER)} />
                                 </div>
                             </div>
+                            {error && (
+                                <div className="p-3 bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-300 rounded-lg text-sm">
+                                    {error}
+                                </div>
+                            )}
                             <div className="flex items-center justify-end gap-3 pt-4 border-t border-slate-200 dark:border-slate-700">
-                                <Button variant="ghost" onClick={() => setIsPreviewOpen(true)} disabled={isFormIncomplete}>Preview</Button>
-                                <Button onClick={handleSendBroadcast} disabled={isFormIncomplete}>Send Broadcast</Button>
+                                <Button variant="ghost" onClick={() => setIsPreviewOpen(true)} disabled={isFormIncomplete || isSubmitting}>Preview</Button>
+                                <Button onClick={handleSendBroadcast} disabled={isFormIncomplete || isSubmitting}>
+                                    {isSubmitting ? 'Sending...' : 'Send Broadcast'}
+                                </Button>
                             </div>
                         </div>
                     </Card>

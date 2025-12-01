@@ -63,7 +63,7 @@ export const Header: React.FC = () => {
                             {React.cloneElement(ICONS.announcement, { className: "h-6 w-6" })}
                             <span className="absolute -top-1 -right-1 h-2 w-2 bg-red-500 rounded-full"></span>
                         </button>
-                        {isAnnouncementsVisible && <AnnouncementsDropdown onClose={() => setAnnouncementsVisible(false)} />}
+                        {isAnnouncementsVisible && <AnnouncementsDropdown isOpen={isAnnouncementsVisible} onClose={() => setAnnouncementsVisible(false)} />}
                     </div>
                     <Link to="/profile">
                         <Avatar src={user.avatar} alt={user.name} size="sm" />
@@ -111,7 +111,7 @@ export const Header: React.FC = () => {
                             {ICONS.announcement}
                             <span className="absolute -top-1 -right-1 h-2 w-2 bg-red-500 rounded-full"></span>
                         </button>
-                        {isAnnouncementsVisible && <AnnouncementsDropdown onClose={() => setAnnouncementsVisible(false)} />}
+                        {isAnnouncementsVisible && <AnnouncementsDropdown isOpen={isAnnouncementsVisible} onClose={() => setAnnouncementsVisible(false)} />}
                     </div>
 
                     <div ref={notificationsRef} className="relative">

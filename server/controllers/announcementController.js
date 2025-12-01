@@ -36,7 +36,27 @@ exports.createAnnouncement = async (req, res) => {
 // Get all announcements
 exports.getAnnouncements = async (req, res) => {
   try {
-    const announcements = await Announcement.find()
+    let query = {};
+    
+    // Admins can see all announcements
+    if (req.user.role === 'Admin') {
+      query = {}; // No filter needed
+    } else {
+      // Map backend roles to announcement target values
+      const userRole = req.user.role === 'faculty' ? 'Teacher' : 'Student';
+      
+      // Students see: 'All' + 'Student' announcements
+      // Teachers see: 'All' + 'Teacher' announcements
+      query = {
+        $or: [
+          { target: 'All' },
+          { target: userRole }
+        ]
+      };
+    }
+    
+    // Fetch announcements based on user role
+    const announcements = await Announcement.find(query)
       .populate('author', 'name avatar role')
       .sort({ createdAt: -1 });
 
@@ -66,13 +86,29 @@ exports.getAnnouncements = async (req, res) => {
 // Get unread announcements count
 exports.getUnreadCount = async (req, res) => {
   try {
-    const unreadAnnouncements = await Announcement.countDocuments({
+    let query = {
       readBy: {
         $not: {
           $elemMatch: { userId: req.user._id }
         }
       }
-    });
+    };
+    
+    // Admins can see all unread announcements
+    if (req.user.role !== 'Admin') {
+      // Map backend roles to announcement target values
+      const userRole = req.user.role === 'faculty' ? 'Teacher' : 'Student';
+      
+      // Students see: 'All' + 'Student' announcements
+      // Teachers see: 'All' + 'Teacher' announcements
+      query.$or = [
+        { target: 'All' },
+        { target: userRole }
+      ];
+    }
+    
+    // Count unread announcements based on user role
+    const unreadAnnouncements = await Announcement.countDocuments(query);
 
     res.json({
       unreadCount: unreadAnnouncements
