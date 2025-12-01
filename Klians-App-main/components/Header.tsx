@@ -8,6 +8,7 @@ import { ICONS } from '../constants';
 import { Theme, Role } from '../types';
 import { SearchResultsDropdown } from './SearchResultsDropdown';
 import { NotificationsDropdown } from './NotificationsDropdown';
+import { AnnouncementsDropdown } from './AnnouncementsDropdown';
 
 export const Header: React.FC = () => {
     const { user } = useAuth();
@@ -15,8 +16,10 @@ export const Header: React.FC = () => {
     const [searchTerm, setSearchTerm] = useState('');
     const [isDropdownVisible, setDropdownVisible] = useState(false);
     const [isNotificationsVisible, setNotificationsVisible] = useState(false);
+    const [isAnnouncementsVisible, setAnnouncementsVisible] = useState(false);
     const searchRef = useRef<HTMLDivElement>(null);
     const notificationsRef = useRef<HTMLDivElement>(null);
+    const announcementsRef = useRef<HTMLDivElement>(null);
 
     // Effect to handle clicks outside of the search component and notifications
     useEffect(() => {
@@ -26,6 +29,9 @@ export const Header: React.FC = () => {
             }
             if (notificationsRef.current && !notificationsRef.current.contains(event.target as Node)) {
                 setNotificationsVisible(false);
+            }
+            if (announcementsRef.current && !announcementsRef.current.contains(event.target as Node)) {
+                setAnnouncementsVisible(false);
             }
         };
         document.addEventListener('mousedown', handleClickOutside);
@@ -49,6 +55,16 @@ export const Header: React.FC = () => {
                     <Link to="/messages" className="text-slate-600 dark:text-slate-300">
                         {React.cloneElement(ICONS.messages, { className: "h-7 w-7" })}
                     </Link>
+                    <div ref={announcementsRef} className="relative">
+                        <button 
+                            className="text-slate-600 dark:text-slate-300 relative"
+                            onClick={() => setAnnouncementsVisible(!isAnnouncementsVisible)}
+                        >
+                            {React.cloneElement(ICONS.announcement, { className: "h-7 w-7" })}
+                            <span className="absolute -top-1 -right-1 h-2 w-2 bg-red-500 rounded-full"></span>
+                        </button>
+                        {isAnnouncementsVisible && <AnnouncementsDropdown onClose={() => setAnnouncementsVisible(false)} />}
+                    </div>
                     <div ref={notificationsRef} className="relative">
                         <button 
                             className="text-slate-600 dark:text-slate-300"
@@ -100,6 +116,17 @@ export const Header: React.FC = () => {
 
                 {/* Right: Actions */}
                 <div className="flex items-center space-x-6">
+                    <div ref={announcementsRef} className="relative">
+                        <button 
+                            onClick={() => setAnnouncementsVisible(!isAnnouncementsVisible)}
+                            className="text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 relative"
+                        >
+                            {ICONS.announcement}
+                            <span className="absolute -top-1 -right-1 h-2 w-2 bg-red-500 rounded-full"></span>
+                        </button>
+                        {isAnnouncementsVisible && <AnnouncementsDropdown onClose={() => setAnnouncementsVisible(false)} />}
+                    </div>
+
                     <div ref={notificationsRef} className="relative">
                         <button 
                             onClick={() => setNotificationsVisible(!isNotificationsVisible)}

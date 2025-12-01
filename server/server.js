@@ -47,6 +47,19 @@ io.on('connection', (socket) => {
   // Set up message handlers
   setupMessageHandlers(io, socket);
 
+  // Handle new announcement
+  socket.on('new-announcement', (data) => {
+    console.log('New announcement broadcast:', data);
+    // Broadcast to all users
+    io.emit('announcement-created', data);
+  });
+
+  // Handle announcement read
+  socket.on('announcement-read', (data) => {
+    console.log('Announcement marked as read:', data);
+    io.emit('announcement-read', data);
+  });
+
   // Handle disconnection
   socket.on('disconnect', () => {
     console.log('Client disconnected');
@@ -63,6 +76,7 @@ app.use('/api/events', require('./routes/eventRoutes'));
 app.use('/api/groups', require('./routes/groupRoutes'));
 app.use('/api/messages', require('./routes/messageRoutes'));
 app.use('/api/users', require('./routes/userRoutes'));
+app.use('/api/announcements', require('./routes/announcementRoutes'));
 
 // Basic route
 app.get('/', (req, res) => {

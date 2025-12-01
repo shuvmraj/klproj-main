@@ -17,6 +17,7 @@ import { NotFoundPage } from './pages/NotFoundPage';
 import { ProtectedRoute } from './components/ProtectedRoute';
 import { EventsPage } from './pages/EventsPage';
 import { BroadcastPage } from './pages/BroadcastPage';
+import { AnnouncementsPage } from './pages/AnnouncementsPage';
 import { Role } from './types';
 import { GroupsPage } from './pages/GroupsPage';
 import { SettingsPage } from './pages/SettingsPage';
@@ -37,6 +38,7 @@ const AppRoutes: React.FC = () => {
                 <Route path="messages/:conversationId" element={<MessagesPage />} />
                 <Route path="groups" element={<GroupsPage />} />
                 <Route path="groups/:groupId" element={<GroupsPage />} />
+                <Route path="announcements" element={<AnnouncementsPage />} />
                 <Route path="profile" element={<ProfilePage />} />
                 <Route path="profile/:userId" element={<ProfilePage />} />
                 <Route path="settings" element={<SettingsPage />} />

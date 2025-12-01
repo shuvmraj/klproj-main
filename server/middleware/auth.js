@@ -27,9 +27,9 @@ const protect = async (req, res, next) => {
   }
 };
 
-// Middleware to check if user is faculty
+// Middleware to check if user is faculty (teachers/admins)
 const facultyOnly = (req, res, next) => {
-  if (req.user && req.user.role === 'faculty') {
+  if (req.user && (req.user.role === 'faculty' || req.user.role === 'Teacher' || req.user.role === 'Admin')) {
     next();
   } else {
     res.status(403).json({ message: 'Access denied. Faculty only.' });

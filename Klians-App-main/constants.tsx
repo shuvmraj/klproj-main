@@ -62,6 +62,8 @@ export const ICONS = {
     save: <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2"><path strokeLinecap="round" strokeLinejoin="round" d="M5 5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16l-7-3.5L5 21V5z" /></svg>,
     saveSolid: <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path d="M5 4a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v14l-5-2.5L5 18V4z" /></svg>,
     pinSolid: <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor"><path fillRule="evenodd" d="M10 3a1 1 0 011 1v5.586l3.293-3.293a1 1 0 111.414 1.414L12.414 11H18a1 1 0 110 2h-5.586l3.293 3.293a1 1 0 11-1.414 1.414L11 14.414V20a1 1 0 11-2 0v-5.586l-3.293 3.293a1 1 0 11-1.414-1.414L7.586 13H2a1 1 0 110-2h5.586L4.293 7.707a1 1 0 111.414-1.414L9 9.586V4a1 1 0 011-1z" clipRule="evenodd" /></svg>,
+    announcement: <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5.882V19.24a1.76 1.76 0 01-3.417.592l-2.147-6.15M18 13a3 3 0 100-6M5.436 13.683A4.001 4.001 0 017 6h1.832c4.1 0 7.625-2.236 9.168-5.514C18.378 1.282 18.735 1 19 1s.622.282.832.486M5.436 13.683L5 15a1 1 0 001 1h2.154l1.41-1.41M5.436 13.683A4.001 4.001 0 007 18h1.832c4.1 0 7.625 2.236 9.168 5.514C18.378 22.718 18.735 23 19 23s.622-.282.832-.486" /></svg>,
+    announcementSolid: <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" viewBox="0 0 20 20" fill="currentColor"><path d="M18 5v8a2 2 0 01-2 2h-5l-5 4v-4H4a2 2 0 01-2-2V5a2 2 0 012-2h12a2 2 0 012 2zM7 8h6v2H7V8zm6 4H7v-2h6v2z" /></svg>,
 };
 
 // USERS
