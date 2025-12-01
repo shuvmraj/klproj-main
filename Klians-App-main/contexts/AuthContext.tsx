@@ -21,6 +21,14 @@ const normalizeUser = (data: any): User => {
     throw new Error('User data is required for normalization');
   }
   
+  // Map backend roles to frontend roles
+  let role = data.role as Role;
+  if (data.role === 'faculty') {
+    role = Role.TEACHER;
+  } else if (data.role === 'student') {
+    role = Role.STUDENT;
+  }
+  
   return {
     id: data._id || data.id,
     name: data.name,
@@ -29,7 +37,7 @@ const normalizeUser = (data: any): User => {
     avatar: data.profilePicture || data.avatar || '', // Map profilePicture to avatar
     coverPhoto: data.coverPhoto || '',
     bio: data.bio || '',
-    role: data.role as Role,
+    role: role,
     createdAt: data.createdAt || new Date().toISOString(),
   };
 };

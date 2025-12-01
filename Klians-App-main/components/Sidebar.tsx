@@ -13,6 +13,7 @@ export const Sidebar: React.FC = () => {
     { to: '/home', label: 'Home', icon: ICONS.home, roles: [Role.STUDENT, Role.TEACHER, Role.ADMIN] },
     { to: '/messages', label: 'Messages', icon: ICONS.messages, roles: [Role.STUDENT, Role.TEACHER, Role.ADMIN] },
     { to: '/groups', label: 'Groups', icon: ICONS.groups, roles: [Role.STUDENT, Role.TEACHER, Role.ADMIN] },
+    { to: '/announcements', label: 'Announcements', icon: ICONS.announcement, roles: [Role.STUDENT, Role.TEACHER, Role.ADMIN] },
     { to: '/mailbox', label: 'Mailbox', icon: ICONS.mailbox, roles: [Role.STUDENT, Role.TEACHER, Role.ADMIN] },
     { to: '/events', label: 'Events', icon: ICONS.events, roles: [Role.STUDENT, Role.TEACHER, Role.ADMIN] },
     { to: '/profile', label: 'Profile', icon: ICONS.profile, roles: [Role.STUDENT, Role.TEACHER, Role.ADMIN] },

@@ -216,7 +216,7 @@ export const EventsPage: React.FC = () => {
                 </button>
                 <h1 className="text-3xl font-bold">Events</h1>
             </div>
-            {(user?.role === Role.TEACHER || user?.role === 'faculty') && (
+            {(user?.role === Role.TEACHER || user?.role === Role.ADMIN) && (
               <Button onClick={() => setIsModalOpen(true)}>Create Event</Button>
             )}
         </div>

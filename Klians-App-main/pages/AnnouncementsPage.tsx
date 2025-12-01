@@ -34,7 +34,7 @@ export const AnnouncementsPage: React.FC = () => {
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const isTeacherOrAdmin = user && (user.role === 'faculty' || user.role === 'Teacher' || user.role === 'Admin');
+  const isTeacherOrAdmin = user && (user.role === Role.TEACHER || user.role === Role.ADMIN);
 
   useEffect(() => {
     fetchAnnouncements();
