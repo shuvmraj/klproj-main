@@ -51,36 +51,23 @@ export const Header: React.FC = () => {
                 <Link to="/home" className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-brand-gradient-from to-brand-gradient-to">
                     KLIAS
                 </Link>
-                <div className="flex items-center space-x-4">
+                <div className="flex items-center space-x-3">
                     <Link to="/messages" className="text-slate-600 dark:text-slate-300">
-                        {React.cloneElement(ICONS.messages, { className: "h-7 w-7" })}
+                        {React.cloneElement(ICONS.messages, { className: "h-6 w-6" })}
                     </Link>
                     <div ref={announcementsRef} className="relative">
                         <button 
                             className="text-slate-600 dark:text-slate-300 relative"
                             onClick={() => setAnnouncementsVisible(!isAnnouncementsVisible)}
                         >
-                            {React.cloneElement(ICONS.announcement, { className: "h-7 w-7" })}
+                            {React.cloneElement(ICONS.announcement, { className: "h-6 w-6" })}
                             <span className="absolute -top-1 -right-1 h-2 w-2 bg-red-500 rounded-full"></span>
                         </button>
                         {isAnnouncementsVisible && <AnnouncementsDropdown onClose={() => setAnnouncementsVisible(false)} />}
                     </div>
-                    <div ref={notificationsRef} className="relative">
-                        <button 
-                            className="text-slate-600 dark:text-slate-300"
-                            onClick={() => setNotificationsVisible(!isNotificationsVisible)}
-                        >
-                            {React.cloneElement(ICONS.bell, { className: "h-7 w-7" })}
-                        </button>
-                        {isNotificationsVisible && <NotificationsDropdown onClose={() => setNotificationsVisible(false)} />}
-                    </div>
-                    {(user.role === Role.TEACHER || user.role === Role.ADMIN) && (
-                        <Link to="/profile">
-                            <div className="rounded-full p-0.5 border-2 border-red-500">
-                                <Avatar src={user.avatar} alt={user.name} size="sm" />
-                            </div>
-                        </Link>
-                    )}
+                    <Link to="/profile">
+                        <Avatar src={user.avatar} alt={user.name} size="sm" />
+                    </Link>
                 </div>
             </div>
 

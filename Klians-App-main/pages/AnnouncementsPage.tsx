@@ -4,8 +4,6 @@ import { useSocket } from '../contexts/SocketContext';
 import { announcementsAPI } from '../src/api/announcements';
 import { Role } from '../types';
 import { Modal } from '../components/ui/Modal';
-import { Button } from '../components/ui/Button';
-import { Input } from '../components/ui/Input';
 
 interface Announcement {
   _id: string;
@@ -36,7 +34,7 @@ export const AnnouncementsPage: React.FC = () => {
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const isTeacherOrAdmin = user?.role === Role.TEACHER || user?.role === Role.ADMIN;
+  const isTeacherOrAdmin = user && (user.role === 'faculty' || user.role === 'Teacher' || user.role === 'Admin');
 
   useEffect(() => {
     fetchAnnouncements();
@@ -119,40 +117,41 @@ export const AnnouncementsPage: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-slate-900 p-4">
-      <div className="max-w-2xl mx-auto">
+    <div className="min-h-screen bg-slate-50 dark:bg-slate-900">
+      <div className="max-w-4xl mx-auto px-4 py-6">
         {/* Header */}
-        <div className="flex items-center justify-between mb-8">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-8 gap-4">
           <h1 className="text-3xl font-bold text-slate-900 dark:text-slate-100">Announcements</h1>
           {isTeacherOrAdmin && (
-            <Button
+            <button
               onClick={() => setIsCreateModalOpen(true)}
-              className="bg-blue-600 hover:bg-blue-700 text-white"
+              className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition whitespace-nowrap"
             >
               + New Announcement
-            </Button>
+            </button>
           )}
         </div>
 
         {/* Create Modal */}
         {isTeacherOrAdmin && (
           <Modal isOpen={isCreateModalOpen} onClose={() => setIsCreateModalOpen(false)}>
-            <div className="bg-white dark:bg-slate-800 p-6 rounded-lg max-w-md w-full">
+            <div className="bg-white dark:bg-slate-800 p-4 sm:p-6 rounded-lg w-full max-w-md mx-auto">
               <h2 className="text-2xl font-bold text-slate-900 dark:text-slate-100 mb-4">
                 Create Announcement
               </h2>
-              <form onSubmit={handleCreateAnnouncement} className="space-y-4">
+              <form onSubmit={handleCreateAnnouncement} className="space-y-3">
                 <div>
                   <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
                     Title
                   </label>
-                  <Input
+                  <input
                     type="text"
                     placeholder="Announcement title"
                     value={formData.title}
                     onChange={(e) =>
                       setFormData({ ...formData, title: e.target.value })
                     }
+                    className="w-full px-4 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-100 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   />
                 </div>
                 <div>
@@ -185,21 +184,21 @@ export const AnnouncementsPage: React.FC = () => {
                     <option value="Teacher">Teachers</option>
                   </select>
                 </div>
-                <div className="flex gap-2">
-                  <Button
+                <div className="flex gap-2 pt-2">
+                  <button
                     type="submit"
                     disabled={isSubmitting}
-                    className="flex-1 bg-blue-600 hover:bg-blue-700 text-white"
+                    className="flex-1 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition disabled:opacity-50"
                   >
                     {isSubmitting ? 'Creating...' : 'Create'}
-                  </Button>
-                  <Button
+                  </button>
+                  <button
                     type="button"
                     onClick={() => setIsCreateModalOpen(false)}
-                    className="flex-1 bg-slate-300 dark:bg-slate-600 text-slate-900 dark:text-slate-100 hover:bg-slate-400 dark:hover:bg-slate-500"
+                    className="flex-1 px-4 py-2 bg-slate-300 dark:bg-slate-600 text-slate-900 dark:text-slate-100 rounded-lg font-medium transition hover:bg-slate-400 dark:hover:bg-slate-500"
                   >
                     Cancel
-                  </Button>
+                  </button>
                 </div>
               </form>
             </div>
@@ -214,7 +213,7 @@ export const AnnouncementsPage: React.FC = () => {
         )}
 
         {/* Announcements List */}
-        <div className="space-y-4">
+        <div className="space-y-3 sm:space-y-4">
           {loading ? (
             <div className="text-center py-8 text-slate-500 dark:text-slate-400">
               Loading announcements...
@@ -227,20 +226,20 @@ export const AnnouncementsPage: React.FC = () => {
             announcements.map((announcement) => (
               <div
                 key={announcement._id}
-                className={`bg-white dark:bg-slate-800 rounded-lg shadow p-6 ${
+                className={`bg-white dark:bg-slate-800 rounded-lg shadow p-4 sm:p-6 ${
                   !announcement.isRead ? 'border-l-4 border-blue-500' : ''
                 }`}
               >
                 {/* Header */}
-                <div className="flex items-start justify-between mb-3">
-                  <div className="flex items-start gap-3 flex-1">
+                <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between mb-3 gap-2">
+                  <div className="flex items-start gap-3 flex-1 min-w-0">
                     <img
                       src={announcement.author.avatar}
                       alt={announcement.author.name}
-                      className="h-10 w-10 rounded-full"
+                      className="h-10 w-10 rounded-full flex-shrink-0"
                     />
-                    <div>
-                      <h3 className="font-semibold text-slate-900 dark:text-slate-100">
+                    <div className="min-w-0">
+                      <h3 className="font-semibold text-slate-900 dark:text-slate-100 truncate">
                         {announcement.author.name}
                       </h3>
                       <p className="text-sm text-slate-500 dark:text-slate-400">
@@ -251,7 +250,7 @@ export const AnnouncementsPage: React.FC = () => {
                   {isTeacherOrAdmin && announcement.author._id === user?._id && (
                     <button
                       onClick={() => handleDeleteAnnouncement(announcement._id)}
-                      className="text-red-600 dark:text-red-400 hover:text-red-700 dark:hover:text-red-300 text-sm"
+                      className="text-red-600 dark:text-red-400 hover:text-red-700 dark:hover:text-red-300 text-sm font-medium"
                     >
                       Delete
                     </button>
@@ -269,18 +268,18 @@ export const AnnouncementsPage: React.FC = () => {
                 </p>
 
                 {/* Footer */}
-                <div className="flex items-center justify-between text-sm text-slate-500 dark:text-slate-400">
-                  <div>
+                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between text-sm text-slate-500 dark:text-slate-400 gap-2 pt-2">
+                  <div className="flex flex-wrap items-center gap-2">
                     <span>{new Date(announcement.createdAt).toLocaleDateString()}</span>
-                    <span className="mx-2">•</span>
-                    <span className="px-2 py-1 bg-slate-100 dark:bg-slate-700 rounded">
+                    <span className="hidden sm:inline">•</span>
+                    <span className="px-2 py-1 bg-slate-100 dark:bg-slate-700 rounded text-xs">
                       {announcement.target}
                     </span>
                   </div>
                   {!announcement.isRead && (
                     <button
                       onClick={() => handleMarkAsRead(announcement._id)}
-                      className="text-blue-600 dark:text-blue-400 hover:underline"
+                      className="text-blue-600 dark:text-blue-400 hover:underline text-sm font-medium"
                     >
                       Mark as read
                     </button>
